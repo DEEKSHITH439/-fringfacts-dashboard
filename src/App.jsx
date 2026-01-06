@@ -24,6 +24,7 @@ function App() {
 
   const heroUpload = {
     topic: "The 'Immortal' Jellyfish",
+    searchTerm: "Immortal Jellyfish aesthetic",
     hook: "This animal cheats death continuously...",
     confidence: 98,
     viewPot: "2M - 5M",
@@ -39,11 +40,11 @@ function App() {
   ];
 
   const backupIdeas = [
-    { type: "Versus", text: "Honey Badger vs Wolverine: Who actually wins?", safe: true, note: "Compare durability & aggression. Use clips of both.", psychology: "Conflict Resolution", mistake: "Declaring a winner too early." },
-    { type: "Cryptid", text: "The 'Skinwalker' whistles you should never ignore...", safe: false, note: "⚠️ Use eerie forest stock footage, NOT gore.", psychology: "Primal Fear", mistake: "Using fake-looking CGI monsters." },
-    { type: "Multi-Animal", text: "3 Animals that could take down a Gorilla.", safe: true, note: "Feature Leopard, Grizzly, and hippo stats.", psychology: "Power Scaling", mistake: "Ignoring the Gorilla's intelligence." },
-    { type: "Mystery", text: "Why do dogs bark at 'nothing' in the corner?", safe: true, note: "Imply supernatural without stating it.", psychology: "Paranormal Ambiguity", mistake: "Over-explaining the science." },
-    { type: "Deep Sea", text: "The creature that eats sharks for breakfast.", safe: true, note: "Orca vs Great White hunting clips.", psychology: "Apex Predator Awe", mistake: "Boring narration." },
+    { type: "Versus", text: "Honey Badger vs Wolverine: Who actually wins?", searchTerm: "Honey Badger vs Wolverine art", safe: true, note: "Compare durability & aggression. Use clips of both.", psychology: "Conflict Resolution", mistake: "Declaring a winner too early." },
+    { type: "Cryptid", text: "The 'Skinwalker' whistles you should never ignore...", searchTerm: "Skinwalker forest scary", safe: false, note: "⚠️ Use eerie forest stock footage, NOT gore.", psychology: "Primal Fear", mistake: "Using fake-looking CGI monsters." },
+    { type: "Multi-Animal", text: "3 Animals that could take down a Gorilla.", searchTerm: "Silverback Gorilla angry", safe: true, note: "Feature Leopard, Grizzly, and hippo stats.", psychology: "Power Scaling", mistake: "Ignoring the Gorilla's intelligence." },
+    { type: "Mystery", text: "Why do dogs bark at 'nothing' in the corner?", searchTerm: "Dog barking at ghost", safe: true, note: "Imply supernatural without stating it.", psychology: "Paranormal Ambiguity", mistake: "Over-explaining the science." },
+    { type: "Deep Sea", text: "The creature that eats sharks for breakfast.", searchTerm: "Orca hunting shark", safe: true, note: "Orca vs Great White hunting clips.", psychology: "Apex Predator Awe", mistake: "Boring narration." },
   ];
 
   // --- COMPETITOR INTELLIGENCE (Real-Time Simulation) ---
@@ -118,16 +119,20 @@ function App() {
   const currentIdea = backupIdeas[currentIdeaIndex];
   const previewIdea1 = backupIdeas[(currentIdeaIndex + 1) % backupIdeas.length];
 
-  const handleGenerateScript = (type) => {
-    setScriptData({
-      title: type === 'hero' ? heroUpload.topic : currentIdea.text,
-      hook: selectedHook,
-      intro: type === 'hero' ? "You think death is the end? Not for this creature." : "Most people think this is impossible...",
-      body: "[Fast cut montage of subject] ... biological impossibility ... scientific breakdown...",
-      cta: "Subscribe for more weird nature.",
-      audio: "Dark Synthwave / Eerie Ambiance"
-    });
-    setShowScript(true);
+  const handleAction = (type, action) => {
+    const term = type === 'hero' ? heroUpload.searchTerm : currentIdea.searchTerm;
+    const name = type === 'hero' ? heroUpload.topic : currentIdea.text;
+
+    if (action === 'pinterest') {
+      window.open(`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(term)}`, '_blank');
+    } else if (action === 'copy') {
+      navigator.clipboard.writeText(name);
+      if (typeof toast !== 'undefined' && toast.success) {
+        toast.success(`Copied: "${name}"`);
+      } else {
+        alert(`Copied: "${name}"`);
+      }
+    }
   };
 
   const renderContent = () => {
@@ -173,13 +178,16 @@ function App() {
                 <div className="flex flex-col justify-center space-y-3 border-l border-slate-800 md:pl-8">
                   <p className="text-slate-400 text-xs italic">"Why it works: {heroUpload.reason}"</p>
                   <button
-                    onClick={() => handleGenerateScript('hero')}
-                    className="w-full py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-indigo-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2"
+                    onClick={() => handleAction('hero', 'copy')}
+                    className="w-full py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 active:scale-95"
                   >
-                    <span>📜</span> Generate Script
+                    <span>�</span> Copy Name
                   </button>
-                  <button className="w-full py-3 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-all border border-slate-700">
-                    <span>🎨</span> Create Thumbnail
+                  <button
+                    onClick={() => handleAction('hero', 'pinterest')}
+                    className="w-full py-3 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-500 transition-all border border-rose-500 shadow-lg shadow-rose-900/40 flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    <span>📌</span> 1-Click Pinterest
                   </button>
                 </div>
               </div>
@@ -251,8 +259,8 @@ function App() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mt-4">
-                    <button onClick={() => handleGenerateScript('alchemist')} className="py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded flex items-center justify-center gap-1">📜 Script</button>
-                    <button className="py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded flex items-center justify-center gap-1">🖼️ Thumb</button>
+                    <button onClick={() => handleAction('alchemist', 'copy')} className="py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded flex items-center justify-center gap-1 active:scale-95 transition-transform">� Copy Name</button>
+                    <button onClick={() => handleAction('alchemist', 'pinterest')} className="py-2 bg-rose-700 hover:bg-rose-600 text-white text-xs font-bold rounded flex items-center justify-center gap-1 active:scale-95 transition-transform">� Pinterest</button>
                   </div>
                 </div>
 
