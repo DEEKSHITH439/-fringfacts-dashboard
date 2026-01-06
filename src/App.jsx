@@ -283,103 +283,110 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30">
-      <div className="max-w-7xl mx-auto p-4 md:p-8">
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30 pb-12">
+      <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
 
         {/* GLOBAL HEADER */}
-        <header className="mb-8 border-b border-slate-800/50 pb-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-            <div>
-              <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-3">
+        <header className="border-b border-slate-800/50 pb-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
+            <div className="w-full lg:w-auto">
+              <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight flex items-center gap-3">
                 FringFacts <span className="text-indigo-500">Intelligence</span>
               </h1>
-              <div className="flex items-center gap-4 mt-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Updates Live
+
+              {/* Status Bar - Scrollable on very small screens or wrapped */}
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-3 text-[10px] md:text-xs font-bold uppercase tracking-wider text-slate-500">
+                <span className="flex items-center gap-2 bg-emerald-500/5 px-2 py-1 rounded border border-emerald-500/10">
+                  <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Live
                 </span>
-                <span>•</span>
-                <span>Market Volatility: <span className="text-amber-400">High</span></span>
-                <span>•</span>
-                <span className="flex items-center gap-2 text-slate-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded">
+                <span className="hidden md:inline">•</span>
+                <span className="bg-amber-500/5 px-2 py-1 rounded border border-amber-500/10 text-amber-500">
+                  Volatility: High
+                </span>
+                <span className="hidden md:inline">•</span>
+                <span className="flex items-center gap-2 text-slate-300 bg-slate-900 border border-slate-800 px-2 py-1 rounded">
                   <span>⏰ IST:</span>
                   <span className="text-white font-mono">{time.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true })}</span>
                 </span>
               </div>
             </div>
-            <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800">
-              {['dashboard', 'competitors', 'signals'].map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-md text-sm font-bold capitalize transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-slate-400 hover:text-white'}`}
-                >
-                  {tab}
-                </button>
-              ))}
+
+            {/* Tabs - Horizontal Scroll on Mobile */}
+            <div className="w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
+              <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800 min-w-max">
+                {['dashboard', 'competitors', 'signals'].map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 md:px-6 py-2 rounded-md text-xs md:text-sm font-bold capitalize transition-all whitespace-nowrap ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-slate-400 hover:text-white'}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </header>
 
         {renderContent()}
 
-        {/* MODAL - SCRIPT GENERATOR */}
+        {/* MODAL - SCRIPT GENERATOR (Mobile Optimized) */}
         {showScript && scriptData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[85vh]">
-              <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
-                <h3 className="font-bold text-white flex items-center gap-2">
-                  <span>📜</span> Script: {scriptData.title}
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="bg-slate-900 border-t md:border border-slate-700 rounded-t-2xl md:rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh] md:max-h-[85vh]">
+              <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/50 rounded-t-2xl">
+                <h3 className="font-bold text-white flex items-center gap-2 text-sm md:text-base">
+                  <span>📜</span> Script: <span className="truncate max-w-[150px] md:max-w-xs">{scriptData.title}</span>
                 </h3>
                 <button onClick={() => setShowScript(false)} className="text-slate-400 hover:text-white bg-slate-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors">✕</button>
               </div>
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 font-mono text-sm leading-relaxed text-slate-300">
-                <div className="bg-slate-950 p-4 rounded-lg border border-indigo-500/20">
-                  <span className="text-indigo-400 font-bold uppercase text-xs block mb-1">Hook (0-3s)</span>
-                  <p className="text-white text-lg font-bold">"{scriptData.intro}"</p>
-                  <p className="text-slate-500 text-xs mt-2 italic">Visual: Quick zoom into subject.</p>
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 font-mono text-xs md:text-sm leading-relaxed text-slate-300">
+                <div className="bg-slate-950 p-3 md:p-4 rounded-lg border border-indigo-500/20">
+                  <span className="text-indigo-400 font-bold uppercase text-[10px] block mb-1">Hook (0-3s)</span>
+                  <p className="text-white text-base md:text-lg font-bold">"{scriptData.intro}"</p>
+                  <p className="text-slate-500 text-[10px] mt-2 italic">Visual: Quick zoom into subject.</p>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                  <span className="text-slate-500 font-bold uppercase text-xs block mb-1">Value (3-45s)</span>
-                  <p>{scriptData.body}</p>
+                <div className="bg-slate-950 p-3 md:p-4 rounded-lg border border-slate-800">
+                  <span className="text-slate-500 font-bold uppercase text-[10px] block mb-1">Value (3-45s)</span>
+                  <p className="whitespace-pre-wrap">{scriptData.body}</p>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-lg border border-emerald-500/20">
-                  <span className="text-emerald-400 font-bold uppercase text-xs block mb-1">Call to Action</span>
+                <div className="bg-slate-950 p-3 md:p-4 rounded-lg border border-emerald-500/20">
+                  <span className="text-emerald-400 font-bold uppercase text-[10px] block mb-1">Call to Action</span>
                   <p className="text-white font-bold">{scriptData.cta}</p>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-900 p-2 rounded border border-slate-800">
+                <div className="flex flex-col md:flex-row md:items-center gap-2 text-[10px] md:text-xs text-slate-500 bg-slate-900 p-2 rounded border border-slate-800">
                   <span>🔊 Recommended Audio:</span>
                   <span className="text-indigo-300 font-bold">{scriptData.audio}</span>
                 </div>
               </div>
-              <div className="p-4 border-t border-slate-800 bg-slate-950/30 flex justify-end">
-                <button className="px-6 py-2 bg-white text-slate-900 font-bold rounded hover:bg-slate-200 transition-colors">Copy to Clipboard</button>
+              <div className="p-4 border-t border-slate-800 bg-slate-950/30 flex justify-end pb-8 md:pb-4 safe-area-bottom">
+                <button className="w-full md:w-auto px-6 py-3 md:py-2 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-200 transition-colors shadow-lg">Copy to Clipboard</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ANALYSIS MODAL (Reuse existing structure) */}
+        {/* ANALYSIS MODAL (Mobile Optimized) */}
         {showAnalysis && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[80vh]">
-              <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/80 backdrop-blur-sm">
+            <div className="bg-slate-900 border-t md:border border-slate-700 rounded-t-2xl md:rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh] md:max-h-[80vh]">
+              <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/50 rounded-t-2xl">
                 <div>
-                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                    <span className="text-indigo-400">📊</span> Channel Analysis Report
+                  <h3 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                    <span className="text-indigo-400">📊</span> Analysis
                   </h3>
-                  <p className="text-slate-400 text-xs mt-1">Generated based on last 24h of competitor activity</p>
+                  <p className="text-slate-400 text-[10px] md:text-xs mt-1">Based on last 24h competitor activity</p>
                 </div>
                 <button onClick={() => setShowAnalysis(false)} className="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-lg transition-colors">✕</button>
               </div>
 
-              {/* Same MOCK ANALYSIS CONTENT as before, minimal styling updates */}
-              <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h4 className="text-rose-400 font-bold uppercase tracking-wider text-xs border-b border-rose-500/20 pb-2 mb-4">⚠️ Critical Gaps</h4>
-                  <div className="bg-rose-900/10 border border-rose-500/20 p-4 rounded-xl">
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                <div className="space-y-3 md:space-y-4">
+                  <h4 className="text-rose-400 font-bold uppercase tracking-wider text-xs border-b border-rose-500/20 pb-2 mb-2">⚠️ Critical Gaps</h4>
+                  <div className="bg-rose-900/10 border border-rose-500/20 p-3 md:p-4 rounded-xl">
                     <div className="flex items-start gap-3">
-                      <div className="text-2xl">📉</div>
+                      <div className="text-xl md:text-2xl">📉</div>
                       <div>
                         <div className="font-bold text-rose-200 text-sm">Upload Schedule</div>
                         <p className="text-rose-200/60 text-xs mt-1">Missed <span className="text-rose-100 font-bold">2 days</span>.</p>
@@ -387,22 +394,24 @@ function App() {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <h4 className="text-emerald-400 font-bold uppercase tracking-wider text-xs border-b border-emerald-500/20 pb-2 mb-4">🏆 What Winners Are Doing</h4>
-                  <div className="bg-emerald-900/10 border border-emerald-500/20 p-4 rounded-xl">
+                {/* ... (Rest of modal content follows similar responsive patterns) ... */}
+                <div className="space-y-3 md:space-y-4">
+                  <h4 className="text-emerald-400 font-bold uppercase tracking-wider text-xs border-b border-emerald-500/20 pb-2 mb-2">🏆 Winner Strategy</h4>
+                  <div className="bg-emerald-900/10 border border-emerald-500/20 p-3 md:p-4 rounded-xl">
                     <div className="flex items-start gap-3">
-                      <div className="text-2xl">🎵</div>
+                      <div className="text-xl md:text-2xl">🎵</div>
                       <div>
-                        <div className="font-bold text-emerald-200 text-sm">"Spooky Ambiance" Audio</div>
+                        <div className="font-bold text-emerald-200 text-sm">Top Audio</div>
+                        <p className="text-emerald-200/60 text-xs mt-1">"Spooky Ambiance" is trending.</p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 border-t border-slate-800 bg-slate-950/30 flex justify-between items-center">
-                <div className="text-xs text-slate-500">Next analysis: 14:00:00</div>
-                <button onClick={() => setShowAnalysis(false)} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-lg transition-colors">Close Report</button>
+              <div className="p-4 border-t border-slate-800 bg-slate-950/30 flex flex-col md:flex-row justify-between items-center gap-3 pb-8 md:pb-4 safe-area-bottom">
+                <div className="text-[10px] text-slate-500">Next analysis: 14:00:00</div>
+                <button onClick={() => setShowAnalysis(false)} className="w-full md:w-auto px-6 py-3 md:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg">Close Report</button>
               </div>
             </div>
           </div>
