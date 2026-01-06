@@ -307,7 +307,11 @@ function App() {
                 <span className="hidden md:inline">•</span>
                 <span className="flex items-center gap-2 text-slate-300 bg-slate-900 border border-slate-800 px-2 py-1 rounded">
                   <span>⏰ IST:</span>
-                  <span className="text-white font-mono">{time.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true })}</span>
+                  <span className="text-white font-mono flex items-center gap-2">
+                    <span>{time.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                    <span className="text-slate-600 text-[10px]">|</span>
+                    <span className="text-slate-400 text-xs">{time.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit' })}</span>
+                  </span>
                 </span>
               </div>
             </div>
