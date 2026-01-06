@@ -48,7 +48,7 @@ function App() {
   ];
 
   // --- REAL-TIME ENGINE ---
-  const API_KEY = 'AIzaSyCoY0531pqWoaR1-GXxMD0jfovjlkk21Yg'; // 🔑 Live Key
+  const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY; // 🔑 Secured via .env
 
   // --- COMPETITOR INTELLIGENCE (Real-Time Simulation + Real API) ---
   const [competitors, setCompetitors] = useState([
