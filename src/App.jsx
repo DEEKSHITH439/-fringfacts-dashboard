@@ -16,14 +16,14 @@ function App() {
   }, []);
 
   const backupIdeas = [
-    { type: "Mind-Bender", text: "This jellyfish is technically immortal...", safe: true, note: "Focus on biology/science." },
-    { type: "Shock", text: "The deeply disturbing way Anglerfish mate...", safe: false, note: "Use diagrams, not real footage." },
-    { type: "Sad", text: "Why the Kiwi bird has no wings (Sad Story)", safe: true, note: "Focus on empathy." },
-    { type: "Mystery", text: "The sound that killed a whale...", safe: true, note: "Use underwater ambiance." },
-    { type: "Myth-Bust", text: "Goldfish actually have a 3-month memory.", safe: true, note: "Show the experiment." },
-    { type: "Scale", text: "If the Earth was a golf ball, the sun would be...", safe: true, note: "Great for visual comparison." },
-    { type: "Evolution", text: "Humans are slowly losing their pinky toes.", safe: true, note: "Show skeletal diagrams." },
-    { type: "Paradox", text: "The man who saved 1000 babies but is hated.", safe: true, note: "Historical deep dive." }
+    { type: "Versus", text: "Honey Badger vs Wolverine: Who actually wins?", safe: true, note: "Compare durability & aggression. Use clips of both." },
+    { type: "Cryptid", text: "The 'Skinwalker' whistles you should never ignore...", safe: false, note: "⚠️ Use eerie forest stock footage, NOT gore. Focus on the sound." },
+    { type: "Multi-Animal", text: "3 Animals that could take down a Gorilla.", safe: true, note: "Feature Leopard, Grizzly, and hippo stats." },
+    { type: "Mystery", text: "Why do dogs bark at 'nothing' in the corner?", safe: true, note: "Perfect for 'Skinwalker' implication without saying it." },
+    { type: "Deep Sea", text: "The creature that eats sharks for breakfast (Orca vs Great White).", safe: true, note: "Show the hunting strategy clips." },
+    { type: "Cryptid", text: "The Mothman: Real warning or mass hallucination?", safe: true, note: "History/Mystery angle. Use newspaper clippings." },
+    { type: "Myth-Bust", text: "Wolves don't actually howl at the moon.", safe: true, note: "Show the real pack communication clips." },
+    { type: "Survival", text: "If you see a mountain lion, NEVER do this one thing.", safe: true, note: "Urgent educational hook. Compare with Bear advice." }
   ];
 
   const handleRefreshIdea = () => {
