@@ -47,9 +47,12 @@ function App() {
     { type: "Deep Sea", text: "The creature that eats sharks for breakfast.", searchTerm: "Orca hunting shark", safe: true, note: "Orca vs Great White hunting clips.", psychology: "Apex Predator Awe", mistake: "Boring narration." },
   ];
 
-  // --- COMPETITOR INTELLIGENCE (Real-Time Simulation) ---
+  // --- REAL-TIME ENGINE ---
+  const API_KEY = 'AIzaSyCoY0531pqWoaR1-GXxMD0jfovjlkk21Yg'; // 🔑 Live Key
+
+  // --- COMPETITOR INTELLIGENCE (Real-Time Simulation + Real API) ---
   const [competitors, setCompetitors] = useState([
-    { name: "@CasualGeographic", status: "Surging", lastPost: "4h ago", topVideo: "Animals that will impress your teacher", views: 2400000, alert: "High Momentum" },
+    { name: "@CasualGeographic", status: "Syncing...", lastPost: "Checking...", topVideo: "Loading...", views: 0, alert: "Connecting..." },
     { name: "@Animalogic", status: "Active", lastPost: "12h ago", topVideo: "Craziest Animal Facts", views: 850000, alert: "Steady" },
     { name: "@NatGeoKids", status: "Steady", lastPost: "1d ago", topVideo: "Weird But True! Shorts", views: 420000, alert: "Educational Gap" },
     { name: "@AnimalWondersMontana", status: "Active", lastPost: "5h ago", topVideo: "Fox laughing sounds", views: 120000, alert: "Audio Spike" },
@@ -66,15 +69,51 @@ function App() {
     { name: "@Factszone-c22", status: "Active", lastPost: "3h ago", topVideo: "Dog breeds 101", views: 230000, alert: "Steady" }
   ]);
 
-  // Simulate "Live View Count" updates
+  // Fetch Real Data from YouTube
   useEffect(() => {
+    const fetchRealStats = async () => {
+      try {
+        // Fetching @CasualGeographic (Real ID: UC5U-1eH8tZ8b3iWkF5j1kRg)
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,contentDetails&forHandle=@CasualGeographic&key=${API_KEY}`);
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+          const stats = data.items[0].statistics;
+          const realViews = parseInt(stats.viewCount);
+          const realSubs = parseInt(stats.subscriberCount); // Can use this later
+
+          setCompetitors(prev => prev.map(c => {
+            if (c.name === "@CasualGeographic") {
+              return {
+                ...c,
+                status: "LIVE DATA",
+                views: realViews,
+                alert: "VERIFIED API",
+                lastPost: "Live Sync",
+                topVideo: "Total Channel Views" // Initial sync shows total views
+              };
+            }
+            return c;
+          }));
+          if (typeof toast !== 'undefined' && toast.success) toast.success("Connected to YouTube API: Data Verified");
+        }
+      } catch (error) {
+        console.error("API Error", error);
+      }
+    };
+
+    fetchRealStats();
+
+    // Keep the "Jitter" effect for others
     const interval = setInterval(() => {
-      setCompetitors(prev => prev.map(c => ({
-        ...c,
-        // Randomly add 0-50 views to simulate live ticker, higher for viral ones
-        views: c.views + Math.floor(Math.random() * (c.status === 'Viral' || c.status === 'Surging' ? 50 : 5))
-      })));
-    }, 2000); // Update every 2 seconds
+      setCompetitors(prev => prev.map(c => {
+        if (c.name === "@CasualGeographic") return c; // Don't jitter the real one yet
+        return {
+          ...c,
+          views: c.views + Math.floor(Math.random() * (c.status === 'Viral' || c.status === 'Surging' ? 50 : 5))
+        };
+      }));
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
