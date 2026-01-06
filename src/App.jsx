@@ -81,13 +81,36 @@ function App() {
         // For reliability, we will map through the list.
         const updatedCompetitors = await Promise.all(competitors.map(async (comp) => {
           try {
-            const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&forHandle=${encodeURIComponent(comp.handle)}&key=${API_KEY}`);
-            const data = await response.json();
+            // Step 1: Get channel info
+            const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet,contentDetails&forHandle=${encodeURIComponent(comp.handle)}&key=${API_KEY}`);
+            const channelData = await channelResponse.json();
 
-            if (data.items && data.items.length > 0) {
-              const stats = data.items[0].statistics;
-              const snippet = data.items[0].snippet;
+            if (channelData.items && channelData.items.length > 0) {
+              const stats = channelData.items[0].statistics;
+              const snippet = channelData.items[0].snippet;
+              const channelId = channelData.items[0].id;
               const realViews = parseInt(stats.viewCount);
+
+              // Step 2: Get latest video from this channel
+              const searchResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=1&key=${API_KEY}`);
+              const searchData = await searchResponse.json();
+
+              let latestVideoTitle = "No recent videos";
+              let lastPost = "Unknown";
+
+              if (searchData.items && searchData.items.length > 0) {
+                latestVideoTitle = searchData.items[0].snippet.title;
+                const publishedAt = new Date(searchData.items[0].snippet.publishedAt);
+                const now = new Date();
+                const diffMs = now - publishedAt;
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffHours / 24);
+
+                if (diffHours < 1) lastPost = "Just now";
+                else if (diffHours < 24) lastPost = `${diffHours}h ago`;
+                else if (diffDays < 7) lastPost = `${diffDays}d ago`;
+                else lastPost = `${Math.floor(diffDays / 7)}w ago`;
+              }
 
               // Simple "Status/Alert" Logic based on view count magnitude (Simulation of logic)
               let status = "Active";
@@ -101,12 +124,13 @@ function App() {
                 views: realViews,
                 status: status,
                 alert: alert,
-                lastPost: "Live Sync",
-                topVideo: "Total Channel Views"
+                lastPost: lastPost,
+                topVideo: latestVideoTitle
               };
             }
             return { ...comp, alert: "Not Found" };
           } catch (err) {
+            console.error(`Error fetching ${comp.handle}:`, err);
             return comp;
           }
         }));
