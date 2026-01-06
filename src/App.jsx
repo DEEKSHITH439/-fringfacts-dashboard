@@ -277,6 +277,112 @@ function App() {
             </div>
           </div>
         )
+      case 'signals':
+        return (
+          <div className="animate-in fade-in duration-500 space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <span className="animate-pulse text-emerald-500">●</span> Global Signal Matrix
+                </h2>
+                <p className="text-slate-400 text-sm">Real-time cross-platform trend detection</p>
+              </div>
+              <button
+                onClick={() => toast.success("Signals Updated: +12 New Trends Detected")}
+                className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold border border-slate-700 transition-all active:scale-95"
+              >
+                <span>↻</span> Force 24h Refresh
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* GOOGLE TRENDS */}
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="text-2xl">🔎</div>
+                  <div>
+                    <h3 className="font-bold text-white">Google Search Spikes</h3>
+                    <p className="text-xs text-slate-500">High volume queries (Last 4h)</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { term: "Goblin Shark", vol: "+2,000%", tag: "Deep Sea" },
+                    { term: "Giant Squid found", vol: "+550%", tag: "News" },
+                    { term: "Are Capybaras dangerous", vol: "+180%", tag: "Question" },
+                    { term: "Komodo Dragon speed", vol: "+120%", tag: "Stats" }
+                  ].map((item, i) => (
+                    <div key={i} className="flex justify-between items-center group cursor-pointer hover:bg-slate-800/50 p-2 rounded transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className="text-slate-600 font-mono text-xs">#{i + 1}</span>
+                        <span className="text-slate-200 font-bold text-sm group-hover:text-indigo-400 transition-colors">{item.term}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-emerald-400 font-bold text-xs">{item.vol}</span>
+                        <span className="text-[10px] text-slate-500 uppercase">{item.tag}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button className="w-full mt-6 py-3 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 text-xs font-bold uppercase tracking-wider rounded border border-indigo-500/20 transition-all">
+                  View Full Report
+                </button>
+              </div>
+
+              {/* REDDIT PULSE */}
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="text-2xl">🔥</div>
+                  <div>
+                    <h3 className="font-bold text-white">Reddit Viral Pulse</h3>
+                    <p className="text-xs text-slate-500">r/NatureIsMetal, r/Damnthatsinteresting</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { title: "Eagle drags mountain goat off cliff", sub: "r/NatureIsMetal", upvotes: "12.5k", hot: true },
+                    { title: "The sound of a Shoebill Stork (Machine Gun)", sub: "r/OddlyTerrifying", upvotes: "45k", hot: true },
+                    { title: "Octopus punches fish for no reason", sub: "r/AnimalsBeingJerks", upvotes: "8.2k", hot: false }
+                  ].map((post, i) => (
+                    <div key={i} className="bg-slate-950/50 p-3 rounded-lg border border-slate-800 hover:border-orange-500/30 transition-all cursor-pointer">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className="text-[10px] text-slate-500 font-bold">{post.sub}</span>
+                        {post.hot && <span className="bg-orange-500 text-white text-[10px] font-bold px-1 rounded animate-pulse">HOT</span>}
+                      </div>
+                      <p className="text-slate-200 text-sm font-medium leading-snug mb-2">"{post.title}"</p>
+                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                        <span>⬆ {post.upvotes}</span>
+                        <span>•</span>
+                        <span className="text-indigo-400 hover:underline">Adapt for Shorts</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* AUDIO TRENDS */}
+            <div className="bg-gradient-to-r from-slate-900 to-indigo-950/30 border border-slate-800 rounded-xl p-5 md:p-6">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">🎵</div>
+                  <div>
+                    <h3 className="font-bold text-white">Audio Search Trends</h3>
+                    <p className="text-xs text-slate-500">Sounds with highest retention today</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                {['Spooky Ambiance (Slowed)', 'Underwater Deep Rumble', 'Interstellar Theme (Remix)', 'Suspense Ticking'].map((sound, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-slate-950 border border-slate-700 px-3 py-2 rounded-full hover:bg-indigo-600 hover:border-indigo-500 hover:text-white transition-all cursor-pointer group">
+                    <span className="text-indigo-400 group-hover:text-white">▶</span>
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white">{sound}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
       default:
         return <div className="text-white">Select a tab</div>
     }
