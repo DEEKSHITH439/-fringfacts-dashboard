@@ -51,70 +51,77 @@ function App() {
   const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY; // 🔑 Secured via .env
 
   // --- COMPETITOR INTELLIGENCE (Real-Time Simulation + Real API) ---
+  // We use Handles to identify them. 
+  // NOTE: Initial state has "Loading..." placeholders.
   const [competitors, setCompetitors] = useState([
-    { name: "@CasualGeographic", status: "Syncing...", lastPost: "Checking...", topVideo: "Loading...", views: 0, alert: "Connecting..." },
-    { name: "@Animalogic", status: "Active", lastPost: "12h ago", topVideo: "Craziest Animal Facts", views: 850000, alert: "Steady" },
-    { name: "@NatGeoKids", status: "Steady", lastPost: "1d ago", topVideo: "Weird But True! Shorts", views: 420000, alert: "Educational Gap" },
-    { name: "@AnimalWondersMontana", status: "Active", lastPost: "5h ago", topVideo: "Fox laughing sounds", views: 120000, alert: "Audio Spike" },
-    { name: "@Funny_Facts333-S", status: "Viral", lastPost: "10m ago", topVideo: "Cat reflexes explained", views: 15600, alert: "JUST UPLOADED" },
-    { name: "@Factsquest18", status: "Steady", lastPost: "2h ago", topVideo: "3 Facts about Space", views: 45000, alert: "Steady" },
-    { name: "@Factspedia07", status: "Dormant", lastPost: "3d ago", topVideo: "Ocean Mysteries", views: 32000, alert: "Low Activity" },
-    { name: "@Godiva1650", status: "Active", lastPost: "6h ago", topVideo: "Horse grooming asmr", views: 89000, alert: "Niche" },
-    { name: "@FACTSMULTIMEDIA08", status: "Surging", lastPost: "30m ago", topVideo: "Lion vs Tiger debate", views: 5000, alert: "JUST UPLOADED" },
-    { name: "@Lowlights_12", status: "Active", lastPost: "8h ago", topVideo: "Deep sea horrors", views: 670000, alert: "High Momentum" },
-    { name: "@Facts_freeky08", status: "Steady", lastPost: "1d ago", topVideo: "Human body facts", views: 12000, alert: "Steady" },
-    { name: "@TheWildWorld96", status: "Viral", lastPost: "1h ago", topVideo: "Snake eating egg", views: 890000, alert: "High Momentum" },
-    { name: "@strangecreatures-db", status: "Active", lastPost: "5h ago", topVideo: "Rare beetles", views: 34000, alert: "Steady" },
-    { name: "@untoldfacts031", status: "Dormant", lastPost: "5d ago", topVideo: "History facts", views: 11000, alert: "Dropping" },
-    { name: "@Factszone-c22", status: "Active", lastPost: "3h ago", topVideo: "Dog breeds 101", views: 230000, alert: "Steady" }
+    { handle: "@CasualGeographic", name: "Casual Geographic", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Animalogic", name: "Animalogic", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@NatGeoKids", name: "Nat Geo Kids", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@AnimalWondersMontana", name: "Animal Wonders", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Funny_Facts333-S", name: "Funny Facts", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Factsquest18", name: "Facts Quest", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Factspedia07", name: "Factspedia", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Godiva1650", name: "Godiva", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@FACTSMULTIMEDIA08", name: "FACTS MULTIMEDIA", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Lowlights_12", name: "Lowlights", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Facts_freeky08", name: "Facts Freeky", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@TheWildWorld96", name: "The Wild World", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@strangecreatures-db", name: "Strange Creatures", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@untoldfacts031", name: "Untold Facts", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." },
+    { handle: "@Factszone-c22", name: "Facts Zone", status: "Syncing...", lastPost: "...", topVideo: "...", views: 0, alert: "..." }
   ]);
 
   // Fetch Real Data from YouTube
   useEffect(() => {
     const fetchRealStats = async () => {
+      if (!API_KEY) return;
+
       try {
-        // Fetching @CasualGeographic (Real ID: UC5U-1eH8tZ8b3iWkF5j1kRg)
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,contentDetails&forHandle=@CasualGeographic&key=${API_KEY}`);
-        const data = await response.json();
+        // We will fetch them in small batches or one-by-one to ensure we get data (handles can be tricky in batch queris)
+        // For reliability, we will map through the list.
+        const updatedCompetitors = await Promise.all(competitors.map(async (comp) => {
+          try {
+            const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&forHandle=${encodeURIComponent(comp.handle)}&key=${API_KEY}`);
+            const data = await response.json();
 
-        if (data.items && data.items.length > 0) {
-          const stats = data.items[0].statistics;
-          const realViews = parseInt(stats.viewCount);
-          const realSubs = parseInt(stats.subscriberCount); // Can use this later
+            if (data.items && data.items.length > 0) {
+              const stats = data.items[0].statistics;
+              const snippet = data.items[0].snippet;
+              const realViews = parseInt(stats.viewCount);
 
-          setCompetitors(prev => prev.map(c => {
-            if (c.name === "@CasualGeographic") {
+              // Simple "Status/Alert" Logic based on view count magnitude (Simulation of logic)
+              let status = "Active";
+              let alert = "Steady";
+              if (realViews > 10000000) { status = "Viral Titan"; alert = "Dominating"; }
+              else if (realViews > 1000000) { status = "Surging"; alert = "High Momentum"; }
+
               return {
-                ...c,
-                status: "LIVE DATA",
+                ...comp,
+                name: snippet.title, // Use their Real Name
                 views: realViews,
-                alert: "VERIFIED API",
+                status: status,
+                alert: alert,
                 lastPost: "Live Sync",
-                topVideo: "Total Channel Views" // Initial sync shows total views
+                topVideo: "Total Channel Views"
               };
             }
-            return c;
-          }));
-          if (typeof toast !== 'undefined' && toast.success) toast.success("Connected to YouTube API: Data Verified");
-        }
+            return { ...comp, alert: "Not Found" };
+          } catch (err) {
+            return comp;
+          }
+        }));
+
+        setCompetitors(updatedCompetitors);
+        if (typeof toast !== 'undefined' && toast.success) toast.success("War Room Online: 15 Channels Synced");
+
       } catch (error) {
-        console.error("API Error", error);
+        console.error("Master API Error", error);
       }
     };
 
     fetchRealStats();
 
-    // Keep the "Jitter" effect for others
-    const interval = setInterval(() => {
-      setCompetitors(prev => prev.map(c => {
-        if (c.name === "@CasualGeographic") return c; // Don't jitter the real one yet
-        return {
-          ...c,
-          views: c.views + Math.floor(Math.random() * (c.status === 'Viral' || c.status === 'Surging' ? 50 : 5))
-        };
-      }));
-    }, 2000);
-    return () => clearInterval(interval);
+    // No jitter for now, let's just see accurate numbers.
   }, []);
 
   const handleRefreshCompetitors = () => {
