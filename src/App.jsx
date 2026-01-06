@@ -1,9 +1,46 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showScript, setShowScript] = useState(false);
   const [scriptData, setScriptData] = useState(null);
+  // State for AI Ideas
+  const [currentIdeaIndex, setCurrentIdeaIndex] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [time, setTime] = useState(new Date());
+
+  // Clock Effect
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const backupIdeas = [
+    { type: "Mind-Bender", text: "This jellyfish is technically immortal...", safe: true, note: "Focus on biology/science." },
+    { type: "Shock", text: "The deeply disturbing way Anglerfish mate...", safe: false, note: "Use diagrams, not real footage." },
+    { type: "Sad", text: "Why the Kiwi bird has no wings (Sad Story)", safe: true, note: "Focus on empathy." },
+    { type: "Mystery", text: "The sound that killed a whale...", safe: true, note: "Use underwater ambiance." },
+    { type: "Myth-Bust", text: "Goldfish actually have a 3-month memory.", safe: true, note: "Show the experiment." },
+    { type: "Scale", text: "If the Earth was a golf ball, the sun would be...", safe: true, note: "Great for visual comparison." },
+    { type: "Evolution", text: "Humans are slowly losing their pinky toes.", safe: true, note: "Show skeletal diagrams." },
+    { type: "Paradox", text: "The man who saved 1000 babies but is hated.", safe: true, note: "Historical deep dive." }
+  ];
+
+  const handleRefreshIdea = () => {
+    setIsGenerating(true);
+    // Simulate AI network request
+    setTimeout(() => {
+      const nextIndex = (currentIdeaIndex + 1) % backupIdeas.length;
+      setCurrentIdeaIndex(nextIndex);
+      setIsGenerating(false);
+    }, 800);
+  };
+
+  const currentIdea = backupIdeas[currentIdeaIndex];
+  // Calculate next 2 preview ideas for the "list" look, wrapping around
+  const previewIdea1 = backupIdeas[(currentIdeaIndex + 1) % backupIdeas.length];
+  const previewIdea2 = backupIdeas[(currentIdeaIndex + 2) % backupIdeas.length];
+
   const [selectedHook, setSelectedHook] = useState('mystery'); // Default to mystery
   const [showAnalysis, setShowAnalysis] = useState(false);
 
@@ -256,44 +293,52 @@ function App() {
 
             <div className="space-y-6">
               {/* New: Topic Alchemist / Daily Ideas */}
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-3 opacity-10 text-6xl">💡</div>
-                <h2 className="text-xl font-bold text-white mb-1">🧪 Topic Alchemist</h2>
+              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 relative overflow-hidden group hover:border-indigo-500/30 transition-all">
+                <div className="absolute top-0 right-0 p-3 opacity-10 text-6xl group-hover:scale-110 transition-transform duration-500">🧪</div>
+                <h2 className="text-xl font-bold text-white mb-1">Topic Alchemist (AI Backup)</h2>
                 <p className="text-xs text-slate-400 mb-4 flex items-center gap-1">
                   <span>Daily Viral Angles</span>
                   <span className="text-emerald-500 bg-emerald-500/10 px-1 rounded border border-emerald-500/20">Policy Checked ✅</span>
                 </p>
 
-                <div className="space-y-3">
-                  <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-800 hover:border-indigo-500/50 transition-all cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                      <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">The "Mind-Bender" Angle</span>
-                      <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">SAFE</span>
+                <div className="relative min-h-[140px]">
+                  {isGenerating ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm z-10 rounded-lg">
+                      <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                      <span className="text-xs text-indigo-400 font-bold animate-pulse">Consulting Viral Database...</span>
                     </div>
-                    <div className="font-bold text-slate-200 text-sm mt-1">"This jellyfish is technically immortal..."</div>
-                    <p className="text-xs text-slate-500 mt-1">Focus on biology/science. Avoid "death" triggers.</p>
-                  </div>
+                  ) : null}
 
-                  <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-800 hover:border-indigo-500/50 transition-all cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                      <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">The "Shock" Angle</span>
-                      <span className="text-[10px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20">CAUTION</span>
+                  {/* Main Active Idea */}
+                  <div className="p-4 bg-gradient-to-br from-slate-900 to-indigo-950/30 rounded-lg border border-indigo-500/30 shadow-lg mb-3 ring-1 ring-white/5">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className={`text-xs font-bold uppercase tracking-wider ${currentIdea.safe ? 'text-indigo-400' : 'text-amber-400'}`}>The "{currentIdea.type}" Angle</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded border ${currentIdea.safe ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+                        {currentIdea.safe ? 'SAFE' : 'CAUTION'}
+                      </span>
                     </div>
-                    <div className="font-bold text-slate-200 text-sm mt-1">"The deeply disturbing way Anglerfish mate..."</div>
-                    <p className="text-xs text-slate-500 mt-1">⚠️ Risk: "Shocking Content". Keep visual non-gory. Use diagrams, not real footage.</p>
-                  </div>
-
-                  <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-800 hover:border-indigo-500/50 transition-all cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                      <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">The "Sad" Angle</span>
-                      <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">SAFE</span>
-                    </div>
-                    <div className="font-bold text-slate-200 text-sm mt-1">"Why the Kiwi bird has no wings (Sad Story)"</div>
-                    <p className="text-xs text-slate-500 mt-1">Focus on empathy. High retention potential.</p>
+                    <div className="font-bold text-white text-base mb-2 leading-tight">"{currentIdea.text}"</div>
+                    <p className="text-xs text-slate-400 border-t border-white/5 pt-2 flex items-center gap-2">
+                      <span>💡 Tip:</span>
+                      {currentIdea.note}
+                    </p>
                   </div>
                 </div>
-                <button className="w-full mt-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg transition-colors dashed border border-slate-700">
-                  + Generate More Safe Ideas
+
+                {/* Simulated "Next" Queue */}
+                <div className="space-y-2 opacity-50 pointer-events-none grayscale mb-4">
+                  <div className="p-2 bg-slate-950/30 rounded border border-slate-800 flex justify-between items-center">
+                    <span className="text-[10px] text-slate-500">Next: {previewIdea1.type}</span>
+                    <div className="h-1 w-10 bg-slate-800 rounded-full"></div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleRefreshIdea}
+                  disabled={isGenerating}
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-indigo-900/20 flex items-center justify-center gap-2 group-hover:shadow-indigo-500/20"
+                >
+                  <span className="text-lg">↻</span> Generate New Viral Idea
                 </button>
               </div>
 
@@ -475,13 +520,25 @@ function App() {
           </div>
         </div>
       )}
-      {/* Header */}
-      <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-0">
+      {/* Header with Clock */}
+      <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6">
         <div className="mb-6 md:mb-0">
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
             FringFacts Intelligence
           </h1>
-          <p className="text-slate-400 mt-1">Daily Growth Engine & Trend Radar</p>
+          <div className="flex items-center gap-3 mt-2">
+            <p className="text-slate-400 text-sm">Daily Growth Engine</p>
+            <span className="text-slate-600">•</span>
+            <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 border border-slate-700 rounded-full">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-mono font-bold text-emerald-100">
+                {time.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true })} IST
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-1 bg-slate-900/50 p-1 rounded-lg border border-slate-800 mb-6 md:mb-0">
@@ -494,7 +551,13 @@ function App() {
       {/* Main Content Area */}
       {showAnalysis && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          {/* ... (Analysis Modal Content same as before) ... */}
+          {/* For brevity, relying on user existing code, but ensuring we don't break the layout. 
+               The instruction is to replace `App.jsx` sections. 
+               I will assume the Modal is fine and just focus on the Dashboard changes below.
+           */}
           <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[80vh]">
+            {/* ... Modal content ... Keeping it standard or re-inserting if tool requires contiguous block */}
             <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -504,12 +567,10 @@ function App() {
               </div>
               <button onClick={() => setShowAnalysis(false)} className="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-lg transition-colors">✕</button>
             </div>
-
+            {/* ... Re-inserting the modal internal content briefly to ensure tool validity ... */}
             <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* My Mistakes / Gaps */}
               <div className="space-y-4">
                 <h4 className="text-rose-400 font-bold uppercase tracking-wider text-xs border-b border-rose-500/20 pb-2 mb-4">⚠️ Critical Gaps (Your Mistakes)</h4>
-
                 <div className="bg-rose-900/10 border border-rose-500/20 p-4 rounded-xl">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">📉</div>
@@ -519,7 +580,6 @@ function App() {
                     </div>
                   </div>
                 </div>
-
                 <div className="bg-rose-900/10 border border-rose-500/20 p-4 rounded-xl">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">🎣</div>
@@ -530,11 +590,8 @@ function App() {
                   </div>
                 </div>
               </div>
-
-              {/* Competitor Wins */}
               <div className="space-y-4">
                 <h4 className="text-emerald-400 font-bold uppercase tracking-wider text-xs border-b border-emerald-500/20 pb-2 mb-4">🏆 What Winners Are Doing</h4>
-
                 <div className="bg-emerald-900/10 border border-emerald-500/20 p-4 rounded-xl">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">🎵</div>
@@ -544,7 +601,6 @@ function App() {
                     </div>
                   </div>
                 </div>
-
                 <div className="bg-emerald-900/10 border border-emerald-500/20 p-4 rounded-xl">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">📝</div>
@@ -556,7 +612,6 @@ function App() {
                 </div>
               </div>
             </div>
-
             <div className="p-4 border-t border-slate-800 bg-slate-950/30 flex justify-between items-center">
               <div className="text-xs text-slate-500">Next analysis available in 14:00:00</div>
               <button onClick={() => setShowAnalysis(false)} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-lg transition-colors">
